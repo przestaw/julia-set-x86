@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.0)
 
-set(PROJECT_NAME ARKO_PROJECT)
+set(PROJECT_NAME Julia_x86-64)
 
 set(CMAKE_PROJECT_NAME ${PROJECT_NAME})
 project(${PROJECT_NAME})
@@ -16,7 +16,7 @@ set(CMAKE_CXX_FLAGS -m64)
 enable_language(ASM_NASM)
 
 # ADD SOURCE FILES
-set(SOURCE_FILES main.cpp func.asm)
+set(SOURCE_FILES src/main.cpp gen_Julia.asm include/Raw_Julia.cpp include/Raw_Julia.h)
 
 set(EXECUTABLE_NAME ${PROJECT_NAME})
 add_executable(${EXECUTABLE_NAME} ${SOURCE_FILES})

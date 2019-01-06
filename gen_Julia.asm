@@ -1,4 +1,4 @@
-global  func
+global  gen_Julia
 
 section .data
 
@@ -7,15 +7,15 @@ color_G: equ     4
 color_R: equ     2
 
 align 32
-CONST   DQ 0.66 , 0.012
-DOUBLE_RADIUS    DQ 3.0
+CONST   DQ 0.76 , 0.005
+DOUBLE_RADIUS    DQ 1.0
 STEP    DQ 0.002
 BEGIN   DQ -0.90
 BEGIN_M   DQ -0.90
 NEGATE      DQ 0x8000000000000000
 section	.text
 
-func:
+gen_Julia:
 	push    rbp
 	mov	    rbp, rsp
 	push    rbx
@@ -26,32 +26,33 @@ func:
     ;RDI = struct
     ;RSI = array
     ;R8W -> tmp counter
-    cmp     RDI, 0 ;check if struct is null
+    cmp     RDI, 0              ;check if struct is null
     je      error
-    cmp     RSI, 0 ;check if array is null
+    cmp     RSI, 0              ;check if array is null
     je      error
 ;ASSUMING STRUCT IS VALID
     xorpd   xmm14, xmm14
     xorpd   xmm15, xmm15
-    movlpd  xmm14, [STEP];[RDI+24] ;load Immaginary step
-    movhpd  xmm15, [STEP];[RDI+16] ;load Real step
+    movapd  xmm15, [RDI+16]
+    movsd   xmm14, xmm15        ;load Immaginary step
+    movhlps xmm15, xmm14        ;load Real step
     movapd  xmm4, [CONST]
     xorpd   xmm13, xmm13
-    movlpd  xmm13, [BEGIN];[RDI+40] ;load starting position
-    movhpd  xmm13, [BEGIN_M];[RDI+32]
+    movapd  xmm13, [RDI+32]
+
 ;THIS IS BEGIN OF
-    mov     RCX, QWORD [RDI+8] ;load resolution on Y
+    mov     RCX, QWORD [RDI+8]  ;load resolution on Y
 loop_Y:
-    mov     RBX, QWORD [RDI] ;load resolution on X
-    movhpd  xmm13, [BEGIN_M];[RDI+32] ;load begin of the line
+    mov     RBX, QWORD [RDI]    ;load resolution on X
+    movhpd  xmm13, [RDI+32]     ;begin of the line
     cmp     RCX, 0
     je      fin
-    addpd   xmm13, xmm14 ;move to the next line
+    addpd   xmm13, xmm14        ;move to the next line
     dec     RCX
 loop_X:
     cmp     RBX, 0
     je      loop_Y
-    addpd   xmm13, xmm15 ;move to next pixel in line
+    addpd   xmm13, xmm15        ;move to next pixel in line
     dec     RBX
 prepare:
     mov     R8W, 0
@@ -69,8 +70,7 @@ compute:
     movhpd  xmm0, [NEGATE] ;Is there a easier way to negate?
     xorpd   xmm2, xmm0 ;  -Im^2  |  Re*Im
     addpd   xmm2, xmm3 ;Re^2+Im^2| 2*Re*Im - aka New:Re|New:Im
-    ;TODO: add CONST from register xmm4
-    addpd   xmm2, xmm4
+    addpd   xmm2, xmm4 ; constant
     movapd  xmm0, xmm2 ; save new computed Z !
     movapd  xmm1, xmm0 ;   Re    |   Im
     mulpd   xmm1, xmm1 ;   Re^2  |  Im^2
@@ -78,12 +78,10 @@ compute:
     movhlps xmm2, xmm1 ; ??????? |  Re^2
     addsd   xmm2, xmm1 ; ??????? |Re^2+Im^2
     add     R8W, 1
-    cmp     R8, 550
+    cmp     R8, 130
     jge     save
-    comisd  xmm2, [DOUBLE_RADIUS];[RDI+48]
+    comisd  xmm2, [RDI+48]; RADIUS
     jb      compute
-
-;TODO - je prepare
 save:
     mov     RAX, 0
     mov     AL, R8B
