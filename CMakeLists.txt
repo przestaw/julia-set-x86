@@ -16,7 +16,7 @@ set(CMAKE_CXX_FLAGS -m64)
 enable_language(ASM_NASM)
 
 # ADD SOURCE FILES
-set(SOURCE_FILES src/main.cpp gen_Julia.asm include/Raw_Julia.cpp include/Raw_Julia.h)
+set(SOURCE_FILES src/main.cpp src/gen_Julia.asm src/Raw_Julia.cpp include/Raw_Julia.h)
 
 set(EXECUTABLE_NAME ${PROJECT_NAME})
 add_executable(${EXECUTABLE_NAME} ${SOURCE_FILES})

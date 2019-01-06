@@ -34,22 +34,27 @@ private:
     {
         __int64_t width;
         __int64_t height;
-        double step_R;
         double step_I;
-        double left_up_R;
-        double left_up_I;
+        double step_R;
+        double left_down_I;
+        double left_down_R;
         double radius;
     };
 
     DIB calc_DIB_and_padding(data_julia &data);
+    void recalc_step();
 
     data_julia my_data;
     DIB my_DIB;
+    double up_Im;
+    double down_Im;
+    double left_Re;
+    double right_Re;
 public:
     Raw_Julia() : Raw_Julia(900, 900) {};
     Raw_Julia(u_int width, u_int height);
 
-    void set_square(double top_left_x, double top_left_y, double bottom_right_x, double bottom_right_y);
+    void set_square(double right_x, double left_x, double top_y, double down_y);
     void set_size(u_int size);
     void set_size(u_int width, u_int height);
     void set_algorithm_radius(double radius);

@@ -8,11 +8,9 @@ color_R: equ     2
 
 align 32
 CONST   DQ 0.76 , 0.005
-DOUBLE_RADIUS    DQ 1.0
-STEP    DQ 0.002
-BEGIN   DQ -0.90
-BEGIN_M   DQ -0.90
+START_X DQ -2.0
 NEGATE      DQ 0x8000000000000000
+ZERO    DQ 0.0
 section	.text
 
 gen_Julia:
@@ -35,16 +33,18 @@ gen_Julia:
     xorpd   xmm15, xmm15
     movapd  xmm15, [RDI+16]
     movsd   xmm14, xmm15        ;load Immaginary step
-    movhlps xmm15, xmm14        ;load Real step
+    movlps  xmm15, [ZERO]        ;load Real step
     movapd  xmm4, [CONST]
     xorpd   xmm13, xmm13
     movapd  xmm13, [RDI+32]
 
 ;THIS IS BEGIN OF
-    mov     RCX, 800;QWORD [RDI+8]  ;load resolution on Y
+    mov     RCX, QWORD [RDI+8]  ;load resolution on Y
 loop_Y:
-    mov     RBX, 800;QWORD [RDI]    ;load resolution on X
-    movhpd  xmm13, [RDI+32]     ;begin of the line
+    mov     RBX, QWORD [RDI]    ;load resolution on X
+    movsd   xmm0, xmm13
+    movapd  xmm13, [RDI+32]
+    movsd   xmm13, xmm0
     cmp     RCX, 0
     je      fin
     addpd   xmm13, xmm14        ;move to the next line
@@ -101,10 +101,6 @@ save:
     mul     DL
     mov     [RSI], AL
     inc     RSI
-    mov     AL, 255;
-    mov     [RSI], AL
-    inc     RSI
-
     jmp     loop_X
 ;THIS IS END OF
 fin:
