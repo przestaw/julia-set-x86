@@ -59,8 +59,9 @@ public:
     void set_size(u_int width, u_int height);
     void set_algorithm_radius(double radius);
 
-    std::unique_ptr<char> generate();
+    std::unique_ptr<u_int8_t> generate();
     void save_file(std::string filename);
+    void use_julia(u_int8_t *array);
 };
 
 

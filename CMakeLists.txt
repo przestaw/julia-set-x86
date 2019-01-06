@@ -18,5 +18,9 @@ enable_language(ASM_NASM)
 # ADD SOURCE FILES
 set(SOURCE_FILES src/main.cpp src/gen_Julia.asm src/Raw_Julia.cpp include/Raw_Julia.h)
 
+find_package(PkgConfig REQUIRED)
+pkg_search_module(SFML REQUIRED sfml-all)
+
 set(EXECUTABLE_NAME ${PROJECT_NAME})
 add_executable(${EXECUTABLE_NAME} ${SOURCE_FILES})
+target_link_libraries(${EXECUTABLE_NAME} sfml-audio sfml-graphics sfml-window sfml-system)

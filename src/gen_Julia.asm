@@ -78,7 +78,7 @@ compute:
     movhlps xmm2, xmm1 ; ??????? |  Re^2
     addsd   xmm2, xmm1 ; ??????? |Re^2+Im^2
     add     R8W, 1
-    cmp     R8, 130
+    cmp     R8, 170
     jge     save
     comisd  xmm2, [RDI+48]; RADIUS
     jb      compute
@@ -100,6 +100,9 @@ save:
     mov     DL, color_R
     mul     DL
     mov     [RSI], AL
+    inc     RSI
+    mov     AL, 255
+    mov     [RSI], AL ;alpha
     inc     RSI
     jmp     loop_X
 ;THIS IS END OF

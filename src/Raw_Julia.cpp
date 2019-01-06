@@ -8,7 +8,7 @@
 
 extern "C"
 {
-  int gen_Julia(void *argument, char *array);
+  int gen_Julia(void *argument, u_int8_t *array);
 }
 
 Raw_Julia::DIB Raw_Julia::calc_DIB_and_padding(data_julia &data)
@@ -26,35 +26,35 @@ Raw_Julia::Raw_Julia(u_int width, u_int height)
 {
   my_data.width = width;
   my_data.height = height;
-  my_data.step_I = 0.0;
-  my_data.step_R = 0.0;
-  my_data.left_down_I = 0.0;
-  my_data.left_down_R = 0.0;
+  my_data.step_I = 0.002;
+  my_data.step_R = 0.002;
+  my_data.left_down_I = -1.0;
+  my_data.left_down_R = -1.0;
   my_data.radius = 3.0;
 }
 
-std::unique_ptr<char> Raw_Julia::generate()
+std::unique_ptr<uint8_t> Raw_Julia::generate()
 {
-  char * ret = new char[my_DIB.RAW_SIZE*3];
+  u_int8_t * ret = new u_int8_t[my_DIB.RAW_SIZE*3];
   if(gen_Julia(&my_data, ret))
   {
     throw std::runtime_error("unknown error -> null data");
   }
   else
   {
-    return std::unique_ptr<char>(ret);
+    return std::unique_ptr<u_int8_t>(ret);
   }
 }
 
 void Raw_Julia::save_file(std::string filename)
 {
   my_DIB = calc_DIB_and_padding(my_data);
-  char * image = new char[my_DIB.RAW_SIZE*3];
+  u_int8_t* image = new u_int8_t[my_DIB.RAW_SIZE*3];
   std::fstream file;
   file.open(filename, std::ios::out);
   file.write((char*)&my_DIB, 54);
   gen_Julia(&my_data, image);
-  file.write(image, my_DIB.RAW_SIZE*3);
+  file.write((char*)image, my_DIB.RAW_SIZE*3);
   file.close();
   delete[] image;
 }
@@ -88,4 +88,10 @@ void Raw_Julia::recalc_step()
 {
   my_data.step_I = fabs(up_Im-down_Im)/my_data.height;
   my_data.step_R = fabs(left_Re-right_Re)/my_data.width;
+}
+
+void Raw_Julia::use_julia(u_int8_t *array)
+{
+  recalc_step();
+  gen_Julia(&my_data, array);
 }
