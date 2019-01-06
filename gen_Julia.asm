@@ -41,9 +41,9 @@ gen_Julia:
     movapd  xmm13, [RDI+32]
 
 ;THIS IS BEGIN OF
-    mov     RCX, QWORD [RDI+8]  ;load resolution on Y
+    mov     RCX, 800;QWORD [RDI+8]  ;load resolution on Y
 loop_Y:
-    mov     RBX, QWORD [RDI]    ;load resolution on X
+    mov     RBX, 800;QWORD [RDI]    ;load resolution on X
     movhpd  xmm13, [RDI+32]     ;begin of the line
     cmp     RCX, 0
     je      fin
@@ -101,6 +101,10 @@ save:
     mul     DL
     mov     [RSI], AL
     inc     RSI
+    mov     AL, 255;
+    mov     [RSI], AL
+    inc     RSI
+
     jmp     loop_X
 ;THIS IS END OF
 fin:
