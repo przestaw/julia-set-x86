@@ -38,7 +38,10 @@ private:
         double step_R;
         double left_down_I;
         double left_down_R;
+        double const_Im;
+        double const_Re;
         double radius;
+        __int64_t depth;
     };
 
     DIB calc_DIB_and_padding(data_julia &data);
@@ -58,8 +61,9 @@ public:
     void set_size(u_int size);
     void set_size(u_int width, u_int height);
     void set_algorithm_radius(double radius);
+    void set_Z_constant(double Re, double Im);
+    void set_depth(u_int depth);
 
-    std::unique_ptr<u_int8_t> generate();
     void save_file(std::string filename);
     void use_julia(u_int8_t *array);
 };

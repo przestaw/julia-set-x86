@@ -30,20 +30,10 @@ Raw_Julia::Raw_Julia(u_int width, u_int height)
   my_data.step_R = 0.002;
   my_data.left_down_I = -1.0;
   my_data.left_down_R = -1.0;
-  my_data.radius = 3.0;
-}
-
-std::unique_ptr<uint8_t> Raw_Julia::generate()
-{
-  u_int8_t * ret = new u_int8_t[my_DIB.RAW_SIZE*3];
-  if(gen_Julia(&my_data, ret))
-  {
-    throw std::runtime_error("unknown error -> null data");
-  }
-  else
-  {
-    return std::unique_ptr<u_int8_t>(ret);
-  }
+  my_data.const_Im = 0.76;
+  my_data.const_Re = 0.005;
+  my_data.radius = 6.0;
+  my_data.depth = 23;
 }
 
 void Raw_Julia::save_file(std::string filename)
@@ -82,6 +72,22 @@ void Raw_Julia::set_square(double right_x, double left_x, double top_y, double d
   my_data.left_down_I = down_Im;
   my_data.left_down_R = left_Re;
   this->recalc_step();
+}
+
+void Raw_Julia::set_Z_constant(double Re, double Im)
+{
+  my_data.const_Re = Re;
+  my_data.const_Im = Im;
+}
+
+void Raw_Julia::set_algorithm_radius(double radius)
+{
+  my_data.radius = radius;
+}
+
+void Raw_Julia::set_depth(u_int depth)
+{
+  my_data.depth = depth;
 }
 
 void Raw_Julia::recalc_step()

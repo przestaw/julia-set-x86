@@ -15,6 +15,8 @@ set(CMAKE_C_FLAGS -m64)
 set(CMAKE_CXX_FLAGS -m64)
 enable_language(ASM_NASM)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/${CMAKE_BUILD_TYPE})
+
 # ADD SOURCE FILES
 set(SOURCE_FILES src/main.cpp src/gen_Julia.asm src/Raw_Julia.cpp include/Raw_Julia.h)
 
