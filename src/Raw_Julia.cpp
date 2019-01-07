@@ -11,17 +11,6 @@ extern "C"
   int gen_Julia(void *argument, u_int8_t *array);
 }
 
-Raw_Julia::DIB Raw_Julia::calc_DIB_and_padding(data_julia &data)
-{
-  DIB ret;
-  ret.height = data.height;
-  ret.width = data.width;
-  u_int pad = (ret.width*3)%4;
-  ret.RAW_SIZE = (ret.width + pad) * ret.height; //?? unnescesary
-  ret.FILE_SIZE = ret.RAW_SIZE + ret.OFFSET;
-  return ret;
-}
-
 Raw_Julia::Raw_Julia(u_int width, u_int height)
 {
   my_data.width = width;
@@ -34,19 +23,6 @@ Raw_Julia::Raw_Julia(u_int width, u_int height)
   my_data.const_Re = 0.005;
   my_data.radius = 6.0;
   my_data.depth = 23;
-}
-
-void Raw_Julia::save_file(std::string filename)
-{
-  my_DIB = calc_DIB_and_padding(my_data);
-  u_int8_t* image = new u_int8_t[my_DIB.RAW_SIZE*3];
-  std::fstream file;
-  file.open(filename, std::ios::out);
-  file.write((char*)&my_DIB, 54);
-  gen_Julia(&my_data, image);
-  file.write((char*)image, my_DIB.RAW_SIZE*3);
-  file.close();
-  delete[] image;
 }
 
 void Raw_Julia::set_size(u_int width, u_int height)
