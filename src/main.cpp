@@ -8,12 +8,11 @@
 
 int main()
 {
-  u_int width = 600, height = 400, depth = 63;
+  u_int width = 600, height = 400, depth = 73;
   double left = -3.0, right = 3.0, top = 2.0, bottom = -2.0;
   double Re_res, Im_res, Re = 0.0, Im = 1.0;
   bool set_changed = true;
   Raw_Julia julia(width, height);
-  julia.set_depth(depth);
   sf::RenderWindow window(sf::VideoMode(width, height), "Julia set generator x86-64");
   window.setVerticalSyncEnabled(true);
   window.setKeyRepeatEnabled(false);
@@ -32,15 +31,6 @@ int main()
   label.setFont(font);
   label.setColor(sf::Color::White);
   label.setCharacterSize(14);
-  //label.setString(my_stream.str());
-  //my_stream.clear();
-
-  //sf::Sprite canvas;
-  //julia.set_square(right, left, top, bottom);
-  //julia.use_julia(&data[0][0][0]);
-  //image.create(width, height, &data[0][0][0]);
-  //texture.loadFromImage(image);
-  //canvas.setTexture(texture);
 
   while (window.isOpen())
   {
@@ -118,12 +108,23 @@ int main()
       set_changed = true;
     }
 
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
+      depth--;
+      set_changed = true;
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
+      depth++;
+      set_changed = true;
+    }
+
     //window.clear();
     if(set_changed){
       std::stringstream my_stream;
       my_stream << "Window Re[" << left << ","<< right <<"] x Im[" << bottom << ", " << top << "]\nConst : [Re : " << Re << " , Im : " << Im<< " ], \nDepth : " << depth;
       label.setString(my_stream.str());
       sf::Sprite new_sprite;
+      julia.set_depth(depth);
       julia.set_square(right, left, top, bottom);
       julia.set_Z_constant(Re, Im);
       julia.use_julia(data);

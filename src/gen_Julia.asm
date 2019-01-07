@@ -12,51 +12,52 @@ ZERO    DQ 0.0
 section	.text
 
 gen_Julia:
-	push    rbp
-	mov	    rbp, rsp
-	push    rbx
-    ;RAX -> mul
-    ;RBX = width counter
-    ;RCX = height counter
-    ;RDX =
-    ;RDI = struct
-    ;RSI = array
-    ;R8W -> tmp counter
+	push    EBP
+	mov	    EBP, ESP
+    ;EAX -> mul
+    ;EBX = width counter
+    ;ECX = height counter
+    ;EDX =
+    ;EDI = struct
+    ;ESI = array
+    ;EDXW -> tmp counter
     ;R9W -> deepnes
-    cmp     RDI, 0              ;check if struct is null
+    mov     EDI, DWORD [EBP+8]
+    mov     ESI, DWORD [EBP+12]
+    cmp     EDI, 0              ;check if struct is null
     je      error
-    cmp     RSI, 0              ;check if array is null
+    cmp     ESI, 0              ;check if array is null
     je      error
 ;ASSUMING STRUCT IS VALID
-    xorpd   xmm14, xmm14
-    xorpd   xmm15, xmm15
-    movapd  xmm15, [RDI+16]
-    movsd   xmm14, xmm15        ;load Immaginary step
-    movlps  xmm15, [ZERO]       ;load Real step
-    movapd  xmm4 , [RDI+48]     ;load Const
-    xorpd   xmm13, xmm13
-    movapd  xmm13, [RDI+32]
-    movsd   xmm12, [RDI+64]
-    mov     R9   , [RDI+72]
+    xorpd   xmm6, xmm6
+    xorpd   xmm7, xmm7
+    movapd  xmm7, [EDI+16]
+    movsd   xmm6, xmm7        ;load Immaginary step
+    movlps  xmm7, [ZERO]       ;load Real step
+    movapd  xmm4 , [EDI+48]     ;load Const
+    xorpd   xmm5, xmm5
+    movapd  xmm5, [EDI+32]
+    ;movsd   xmm12, [EDI+64]
+    ;mov     R9   , [EDI+72]
 ;THIS IS BEGIN OF
-    mov     RCX, QWORD [RDI+8]  ;load resolution on Y
+    mov     ECX, DWORD [EDI+8]  ;load resolution on Y
 loop_Y:
-    mov     RBX, QWORD [RDI]    ;load resolution on X
-    movsd   xmm0, xmm13
-    movapd  xmm13, [RDI+32]
-    movsd   xmm13, xmm0
-    cmp     RCX, 0
+    mov     EBX, DWORD [EDI]    ;load resolution on X
+    movsd   xmm0, xmm5
+    movapd  xmm5, [EDI+32]
+    movsd   xmm5, xmm0
+    cmp     ECX, 0
     je      fin
-    addpd   xmm13, xmm14        ;move to the next line
-    dec     RCX
+    addpd   xmm5, xmm6        ;move to the next line
+    dec     ECX
 loop_X:
-    cmp     RBX, 0
+    cmp     EBX, 0
     je      loop_Y
-    addpd   xmm13, xmm15        ;move to next pixel in line
-    dec     RBX
+    addpd   xmm5, xmm7        ;move to next pixel in line
+    dec     EBX
 prepare:
-    mov     R8W, 0
-    movapd  xmm0, xmm13         ;load the pixel
+    mov     EDX, 0
+    movapd  xmm0, xmm5         ;load the pixel
     movapd  xmm1, xmm0
     mulpd   xmm1, xmm1          ;   Re^2  |  Im^2
 compute:
@@ -77,42 +78,43 @@ compute:
 
     movhlps xmm2, xmm1          ; ??????? |  Re^2
     addsd   xmm2, xmm1          ; ??????? |Re^2+Im^2
-    add     R8, 1
-    cmp     R8, R9
+    add     EDX, 1
+    cmp     EDX, [EDI+72]
     jge     save
-    comisd  xmm2, xmm12;[RDI+64]      ; RADIUS
+    comisd  xmm2, [EDI+64]      ; RADIUS
     jb      compute
 save:
-    mov     RAX, 0
-    mov     AL, R8B
+    push    ECX                 ;TMEP STORE
+    mov     ECX, EDX
+    mov     EAX, 0
+    mov     AL, CL
     mov     DL, color_B
     mul     DL
-    mov     [RSI], AL
-    inc     RSI
-    mov     RAX, 0
-    mov     AL, R8B
+    mov     [ESI], AL
+    inc     ESI
+    mov     EAX, 0
+    mov     AL, CL
     mov     DL, color_G
     mul     DL
-    mov     [RSI], AL
-    inc     RSI
-    mov     RAX, 0
-    mov     AL, R8B
+    mov     [ESI], AL
+    inc     ESI
+    mov     EAX, 0
+    mov     AL, CL
     mov     DL, color_R
     mul     DL
-    mov     [RSI], AL
-    inc     RSI
+    mov     [ESI], AL
+    inc     ESI
     mov     AL, 255
-    mov     [RSI], AL           ;alpha
-    inc     RSI
+    mov     [ESI], AL           ;alpha
+    inc     ESI
+    pop     ECX                 ;END TMP STORE
     jmp     loop_X
 ;THIS IS END OF
 fin:
-	mov     rax, 0
-	pop     rbx
-	pop	    rbp
+	mov     eax, 0
+	pop	    ebp
 	ret
 error:
-    mov     rax, 1
-    pop     rbx
-    pop     rbp
+    mov     eax, 1
+    pop     ebp
     ret

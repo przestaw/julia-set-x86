@@ -11,25 +11,6 @@
 
 class Raw_Julia {
 private:
-    struct __attribute__((__packed__)) DIB{
-        __uint16_t TYPE = 19778;
-        __uint32_t FILE_SIZE = 0;/////
-        __uint16_t R1 = 0;
-        __uint16_t R2 = 0;
-        __uint32_t OFFSET = 54;
-        __uint32_t DIBSIZE = 40;
-        __uint32_t width = 0;///
-        __uint32_t height = 0;///
-        __uint16_t planes = 1;
-        __uint16_t BPP = 24;
-        __uint32_t BI_RGB = 0;
-        __uint32_t RAW_SIZE = 0;///
-        __uint32_t RES_X = 0;
-        __uint32_t RES_Y = 0;
-        __uint32_t NO_COLOR = 0;
-        __uint32_t IMPOR_COLOR = 0;
-    };
-
     struct __attribute__((aligned(16))) data_julia
     {
         __int64_t width;
@@ -44,11 +25,8 @@ private:
         __int64_t depth;
     };
 
-    DIB calc_DIB_and_padding(data_julia &data);
     void recalc_step();
-
     data_julia my_data;
-    DIB my_DIB;
     double up_Im;
     double down_Im;
     double left_Re;
@@ -64,7 +42,6 @@ public:
     void set_Z_constant(double Re, double Im);
     void set_depth(u_int depth);
 
-    void save_file(std::string filename);
     void use_julia(u_int8_t *array);
 };
 
