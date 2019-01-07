@@ -13,7 +13,7 @@ int main()
   double Re_res, Im_res, Re = 0.0, Im = 1.0;
   bool set_changed = true;
   Raw_Julia julia(width, height);
-  sf::RenderWindow window(sf::VideoMode(width, height), "Julia set generator x86-64");
+  sf::RenderWindow window(sf::VideoMode(width, height), "Julia set generator x86-32");
   window.setVerticalSyncEnabled(true);
   window.setKeyRepeatEnabled(false);
   //u_int8_t data[800][800][4] = {};

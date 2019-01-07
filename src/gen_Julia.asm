@@ -2,9 +2,9 @@ global  gen_Julia
 
 section .data
 
-color_B: equ     3
-color_G: equ     8
-color_R: equ     4
+color_B: equ     6
+color_G: equ     3
+color_R: equ     7
 
 align 32
 NEGATE      DQ 0x8000000000000000
